@@ -1,0 +1,90 @@
+name: Build and Release Executables
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: dahua-windows-amd64.exe
+            use_emulation: false
+          - os: ubuntu-latest
+            name: dahua-linux-amd64
+            use_emulation: false
+          - os: ubuntu-latest
+            name: dahua-linux-arm64
+            use_emulation: true
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        if: ${{ !matrix.use_emulation }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build Standard
+        if: ${{ !matrix.use_emulation }}
+        run: |
+          pip install pyinstaller
+          pyinstaller --onefile main.py
+
+      - name: Build ARM64
+        if: ${{ matrix.use_emulation }}
+        uses: pguyot/arm-runner-action@v2
+        with:
+          base_image: raspios_lite:latest
+          cpu: cortex-a53
+          bind_mount_repository: true
+          commands: |
+            apt-get update && apt-get install -y python3 python3-pip python3-setuptools
+            pip3 install pyinstaller --break-system-packages
+            python3 -m PyInstaller --onefile --distpath ./dist main.py
+            chmod -R 777 ./dist ./build
+
+      - name: Rename Output
+        shell: bash
+        run: |
+          mkdir -p release_bin
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            mv dist/main.exe release_bin/${{ matrix.name }}
+          else
+            sudo mv dist/main release_bin/${{ matrix.name }}
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: release_bin/
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all_bins
+          merge-multiple: true
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: all_bins/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
