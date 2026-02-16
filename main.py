@@ -104,7 +104,7 @@ def main():
 
     aborted = False
     try:
-        done, pending = wait(futures, timeout=5, return_when=ALL_COMPLETED)
+        done, pending = wait(futures, return_when=ALL_COMPLETED)
         for future in done:
             try:
                 result = future.result()
