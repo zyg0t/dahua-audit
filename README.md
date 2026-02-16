@@ -14,14 +14,15 @@ python3 main.py
 3. Run the executable in a terminal
 
 ### Usage 🖥️
-#### `main.py -b ips.txt -t 200`
-- **ips.txt** [BRUTE_FILE] > List of IPv4 addresses written in plaintext, in a txt file, each on a separate line:
+#### `main.py -b ips.txt -t 200 -s 0`
+- **ips.txt** [FILE] > List of IPv4 addresses written in plaintext, in a txt file, each on a separate line:
 ```
 157.240.22.35
 185.199.108.153
 [...and so on]
 ```
-- **200** [THREADS] > Number of threads, default is 200, edit in `*config.py*`
+- **200** [THREADS] > Number of threads, default is 200
+- **0** [SPLIT] > Number of entries per XML file, default is 0
 
 ### Configuration ⚙️ [*config.py*]
 - DEFAULT_THREADS = 200 > **number of threads**
