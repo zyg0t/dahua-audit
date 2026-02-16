@@ -10,8 +10,7 @@ python3 main.py
 ```
 #### 📦 Run from Releases
 1. Download the latest version from **https://github.com/zyg0t/dahua-audit/releases**
-2. Extract the archive
-3. Run the executable in a terminal
+2. Run the correct executable in a terminal
 
 ### Usage 🖥️
 #### `main.py -b ips.txt -t 200 -s 0`
