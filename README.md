@@ -9,7 +9,7 @@ cd dahua-audit
 python3 main.py
 ```
 ### Usage 🖥️
-#### `main.py -b ips.txt -t 200 -s 0`
+#### `main.py -f ips.txt -t 200 -s 0`
 - **ips.txt** [FILE] > List of IPv4 addresses written in plaintext, in a txt file, each on a separate line:
 ```
 157.240.22.35
